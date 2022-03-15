@@ -39,7 +39,7 @@ StatusOr<Path> Filesystem::AppDataDir(absl::string_view app_name) {
   wchar_t* path = nullptr;
   Defer cleanup([&] { CoTaskMemFree(path); });
 
-  HRESULT hr = SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, nullptr, &path);
+  HRESULT hr = SHGetKnownFolderPath(FOLDERID_Music, 0, nullptr, &path);
   if (FAILED(hr)) {
     return Status::FromLastError(
         HRESULT_CODE(hr),
