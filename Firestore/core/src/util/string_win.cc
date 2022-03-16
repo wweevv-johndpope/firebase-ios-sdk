@@ -64,66 +64,7 @@ std::string NativeToUtf8(const std::wstring& input) {
   return NativeToUtf8(input.c_str(), input.size());
 }
 
-std::wstring SysNativeMBToWide(const wchar_t* const input, const size_t input_size) {
-  mbstate_t ps;
-
-  // Calculate the number of wide characters.  We walk through the string
-  // without writing the output, counting the number of wide characters.
-  size_t num_out_chars = 0;
-  memset(&ps, 0, sizeof(ps));
-  for (size_t i = 0; i < input_size; ) {
-    const char* src = input + i;
-    size_t res = mbrtowc(nullptr, src, input_size - i, &ps);
-    switch (res) {
-      // Handle any errors and return an empty string.
-      case static_cast<size_t>(-2):
-      case static_cast<size_t>(-1):
-        return std::wstring();
-      case 0:
-        // We hit an embedded null byte, keep going.
-        i += 1;
-      default:
-        i += res;
-        ++num_out_chars;
-        break;
-    }
-  }
-
-  if (num_out_chars == 0)
-    return std::wstring();
-
-  std::wstring out;
-  out.resize(num_out_chars);
-
-  memset(&ps, 0, sizeof(ps));  // Clear the shift state.
-  // We walk the input string again, with |i| tracking the index of the
-  // multi-byte input, and |j| tracking the wide output.
-  for (size_t i = 0, j = 0; i < input_size; ++j) {
-    const char* src = input + i;
-    wchar_t* dst = &out[j];
-    size_t res = mbrtowc(dst, src, input_size - i, &ps);
-    switch (res) {
-      // Handle any errors and return an empty string.
-      case static_cast<size_t>(-2):
-      case static_cast<size_t>(-1):
-        return std::wstring();
-      case 0:
-        i += 1;  // Skip null byte.
-        break;
-      default:
-        i += res;
-        break;
-    }
-  }
-
-  return out;
-}
-
 std::string NativeToUtf8(const wchar_t* input, size_t input_size) {
-  const std::wstring wide_input = SysNativeMBToWide(input, input_size);
-  input = wide_input.c_str();
-  input_size = wide_input.size();
-
   int input_len = static_cast<int>(input_size);
   if (input_len == 0) {
     return "";
