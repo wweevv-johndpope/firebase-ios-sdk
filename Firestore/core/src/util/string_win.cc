@@ -41,7 +41,7 @@ std::wstring Utf8ToNative(absl::string_view input) {
   // means the result is the number of wchar_t required to hold the result,
   // excluding the null terminator.
   int output_len =
-      ::MultiByteToWideChar(CP_ACP, 0, input.data(), input_len, nullptr, 0);
+      ::MultiByteToWideChar(CP_UTF8, 0, input.data(), input_len, nullptr, 0);
   if (output_len == 0) {
     DWORD error = ::GetLastError();
     HARD_FAIL("Utf8ToNative failed with code %s: %s", error,
@@ -51,7 +51,7 @@ std::wstring Utf8ToNative(absl::string_view input) {
 
   int output_terminated_len = output_len + 1;
   std::wstring output(output_terminated_len, L'\0');
-  int result = ::MultiByteToWideChar(CP_ACP, 0, input.data(), input_len,
+  int result = ::MultiByteToWideChar(CP_UTF8, 0, input.data(), input_len,
                                      &output[0], output_len);
   HARD_ASSERT(result > 0 && result < output_terminated_len &&
               output[output_len] == '\0');
