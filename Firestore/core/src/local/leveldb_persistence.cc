@@ -79,14 +79,26 @@ std::set<std::string> CollectUserSet(LevelDbTransaction* transaction) {
 StatusOr<std::unique_ptr<LevelDbPersistence>> LevelDbPersistence::Create(
     util::Path dir, LocalSerializer serializer, const LruParams& lru_params) {
   auto* fs = Filesystem::Default();
+  LOG_DEBUG("zzyzx LevelDbPersistence::Create() Calling EnsureDirectory(%s)", dir.ToUtf8String());
   Status status = EnsureDirectory(dir);
-  if (!status.ok()) return status;
+  if (!status.ok()) {
+    LOG_DEBUG("zzyzx LevelDbPersistence::Create() Calling EnsureDirectory(%s) FAILED", dir.ToUtf8String());
+    return status;
+  }
 
+  LOG_DEBUG("zzyzx LevelDbPersistence::Create() Calling ExcludeFromBackups(%s)", dir.ToUtf8String());
   status = fs->ExcludeFromBackups(dir);
-  if (!status.ok()) return status;
+  if (!status.ok()) {
+    LOG_DEBUG("zzyzx LevelDbPersistence::Create() Calling ExcludeFromBackups(%s) FAILED", dir.ToUtf8String());
+    return status;
+  }
 
+  LOG_DEBUG("zzyzx LevelDbPersistence::Create() Calling OpenDb(%s)", dir.ToUtf8String());
   StatusOr<std::unique_ptr<DB>> created = OpenDb(dir);
-  if (!created.ok()) return created.status();
+  if (!created.ok()) {
+    LOG_DEBUG("zzyzx LevelDbPersistence::Create() Calling OpenDb(%s) FAILED", dir.ToUtf8String());
+    return created.status();
+  }
 
   std::unique_ptr<DB> db = std::move(created).ValueOrDie();
   LevelDbMigrations::RunMigrations(db.get(), serializer);
@@ -131,8 +143,10 @@ LevelDbPersistence::~LevelDbPersistence() = default;
 
 Status LevelDbPersistence::EnsureDirectory(const Path& dir) {
   auto* fs = Filesystem::Default();
+  LOG_DEBUG("zzyzx LevelDbPersistence::EnsureDirectory() Calling RecursivelyCreateDir(%s)", dir.ToUtf8String());
   Status status = fs->RecursivelyCreateDir(dir);
   if (!status.ok()) {
+    LOG_DEBUG("zzyzx LevelDbPersistence::EnsureDirectory() Calling RecursivelyCreateDir(%s) FAILED", dir.ToUtf8String());
     return Status{Error::kErrorInternal,
                   "Failed to create persistence directory"}
         .CausedBy(status);
@@ -146,8 +160,10 @@ StatusOr<std::unique_ptr<DB>> LevelDbPersistence::OpenDb(const Path& dir) {
   options.create_if_missing = true;
 
   DB* database = nullptr;
+  LOG_DEBUG("zzyzx LevelDbPersistence::OpenDb() Calling DB::Open(%s)", dir.ToUtf8String());
   leveldb::Status status = DB::Open(options, dir.ToUtf8String(), &database);
   if (!status.ok()) {
+    LOG_DEBUG("zzyzx LevelDbPersistence::OpenDb() Calling DB::Open(%s) FAILED", dir.ToUtf8String());
     return Status{Error::kErrorInternal,
                   StringFormat("Failed to open LevelDB database at %s",
                                dir.ToUtf8String())}
