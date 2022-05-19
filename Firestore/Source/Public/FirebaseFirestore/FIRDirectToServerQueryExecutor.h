@@ -17,7 +17,7 @@ NS_SWIFT_NAME(DirectToServerQueryExecutor)
 @interface FIRDirectToServerQueryExecutor<T> : NSObject
 
 /** :nodoc: */
-- (id)init __attribute__((unavailable("FIRDirectToServerQueryExecutor  cannot be created directly.")));
+- (id)init __attribute__((unavailable("FIRDirectToServerQueryExecutor cannot be created directly.")));
 
 + (FIRDirectToServerQueryExecutor<FIRDocumentSnapshot *> *)DirectToServerQueryExecutorForDocument:(FIRDocumentReference *)doc;
 
