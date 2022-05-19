@@ -38,20 +38,25 @@ NS_SWIFT_NAME(DirectToServerQueryExecutor)
 @interface FIRDirectToServerQueryExecutor<T> : NSObject
 
 /** :nodoc: */
-- (id)init __attribute__((unavailable("FIRDirectToServerQueryExecutor cannot be created directly.")));
+- (id)init
+    __attribute__((unavailable("FIRDirectToServerQueryExecutor cannot be created directly.")));
 
-+ (FIRDirectToServerQueryExecutor<FIRDocumentSnapshot *> *)DirectToServerQueryExecutorForDocument:(FIRDocumentReference *)doc;
++ (FIRDirectToServerQueryExecutor<FIRDocumentSnapshot *> *)DirectToServerQueryExecutorForDocument:
+    (FIRDocumentReference *)doc;
 
-+ (FIRDirectToServerQueryExecutor<FIRQuerySnapshot *> *)DirectToServerQueryExecutorForQuery:(FIRQuery *)query;
++ (FIRDirectToServerQueryExecutor<FIRQuerySnapshot *> *)DirectToServerQueryExecutorForQuery:
+    (FIRQuery *)query;
 
-+ (FIRDirectToServerQueryExecutor<FIRAggregateQuerySnapshot *> *)DirectToServerQueryExecutorForAggregateQuery:(FIRAggregateQuery *)query;
++ (FIRDirectToServerQueryExecutor<FIRAggregateQuerySnapshot *> *)
+    DirectToServerQueryExecutorForAggregateQuery:(FIRAggregateQuery *)query;
 
-+ (FIRDirectToServerQueryExecutor<FIRGroupByQuerySnapshot *> *)DirectToServerQueryExecutorForGroupByQuery:(FIRGroupByQuery *)query;
++ (FIRDirectToServerQueryExecutor<FIRGroupByQuerySnapshot *> *)
+    DirectToServerQueryExecutorForGroupByQuery:(FIRGroupByQuery *)query;
 
-+ (FIRDirectToServerQueryExecutor<FIRPartitionQuerySnapshot *> *)DirectToServerQueryExecutorForPartitionQuery:(FIRPartitionQuery *)query;
++ (FIRDirectToServerQueryExecutor<FIRPartitionQuerySnapshot *> *)
+    DirectToServerQueryExecutorForPartitionQuery:(FIRPartitionQuery *)query;
 
-- (void)getWithCompletion:
-    (void (^)(T *_Nullable snapshot, NSError *_Nullable error))completion
+- (void)getWithCompletion:(void (^)(T *_Nullable snapshot, NSError *_Nullable error))completion
     NS_SWIFT_NAME(get(completion:));
 
 - (id<FIRListenerRegistration>)addSnapshotListener:
@@ -60,12 +65,11 @@ NS_SWIFT_NAME(DirectToServerQueryExecutor)
 
 // ALTERNATIVE
 
-- (id<FIRListenerRegistration>)addSnapshotListener:
-    (void (^)(T *_Nullable snapshot, NSError *_Nullable error))listener:
-    (void (^)(FIROnlineState onlineState))onlineStateChangeListener
+- (id<FIRListenerRegistration>)
+          addSnapshotListener:(void (^)(T *_Nullable snapshot, NSError *_Nullable error))listener
+    onlineStateChangeListener:(void (^)(FIROnlineState onlineState))onlineStateChangeListener
     NS_SWIFT_NAME(addSnapshotListener(listener:onlineStateChangeListener:));
 
 @end
 
 NS_ASSUME_NONNULL_END
-
