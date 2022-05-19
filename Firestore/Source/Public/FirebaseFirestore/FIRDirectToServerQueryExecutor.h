@@ -42,6 +42,13 @@ NS_SWIFT_NAME(DirectToServerQueryExecutor)
     (void (^)(T *_Nullable snapshot, NSError *_Nullable error, FIROnlineState onlineState))listener
     NS_SWIFT_NAME(addSnapshotListener(_:));
 
+// ALTERNATIVE
+
+- (id<FIRListenerRegistration>)addSnapshotListener:
+    (void (^)(T *_Nullable snapshot, NSError *_Nullable error))listener:
+    (void (^)(FIROnlineState onlineState))onlineStateChangeListener
+    NS_SWIFT_NAME(addSnapshotListener(listener:onlineStateChangeListener:));
+
 @end
 
 NS_ASSUME_NONNULL_END
