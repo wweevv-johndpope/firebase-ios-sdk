@@ -13,6 +13,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSUInteger, FIROnlineState) {
+  FIRFirestoreOnline,
+  FIRFirestoreOffline
+} NS_SWIFT_NAME(OnlineState);
+
 NS_SWIFT_NAME(DirectToServerQueryExecutor)
 @interface FIRDirectToServerQueryExecutor<T> : NSObject
 
@@ -32,6 +37,10 @@ NS_SWIFT_NAME(DirectToServerQueryExecutor)
 - (void)getWithCompletion:
     (void (^)(T *_Nullable snapshot, NSError *_Nullable error))completion
     NS_SWIFT_NAME(get(completion:));
+
+- (id<FIRListenerRegistration>)addSnapshotListener:
+    (void (^)(T *_Nullable snapshot, NSError *_Nullable error, FIROnlineState onlineState))listener
+    NS_SWIFT_NAME(addSnapshotListener(_:));
 
 @end
 
