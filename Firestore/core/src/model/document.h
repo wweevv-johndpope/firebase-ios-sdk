@@ -44,9 +44,8 @@ class Document {
     return &document_;
   }
 
-  size_t Hash() const {
-    return document_.Hash();
-  }
+  template <typename H>
+  friend H AbslHashValue(H, const Document&);
 
   std::string ToString() const {
     return document_.ToString();
@@ -69,6 +68,11 @@ inline bool operator!=(const Document& lhs, const Document& rhs) {
 }
 
 std::ostream& operator<<(std::ostream& os, const Document& doc);
+
+template <typename H>
+H AbslHashValue(H h, const Document& obj) {
+  return H::combine(std::move(h), obj.document_);
+}
 
 }  // namespace model
 }  // namespace firestore

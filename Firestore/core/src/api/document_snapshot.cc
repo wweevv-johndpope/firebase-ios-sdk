@@ -20,7 +20,6 @@
 
 #include "Firestore/core/src/api/document_reference.h"
 #include "Firestore/core/src/model/resource_path.h"
-#include "Firestore/core/src/util/hashing.h"
 #include "absl/types/optional.h"
 
 namespace firebase {
@@ -56,11 +55,6 @@ DocumentSnapshot::DocumentSnapshot(std::shared_ptr<Firestore> firestore,
       internal_key_{std::move(document_key)},
       internal_document_{std::move(document)},
       metadata_{std::move(metadata)} {
-}
-
-size_t DocumentSnapshot::Hash() const {
-  return util::Hash(firestore_.get(), internal_key_, internal_document_,
-                    metadata_);
 }
 
 bool DocumentSnapshot::exists() const {

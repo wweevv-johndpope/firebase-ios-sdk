@@ -22,7 +22,6 @@
 #include "Firestore/core/src/model/resource_path.h"
 #include "Firestore/core/src/util/comparison.h"
 #include "Firestore/core/src/util/hard_assert.h"
-#include "Firestore/core/src/util/hashing.h"
 
 namespace firebase {
 namespace firestore {
@@ -88,10 +87,6 @@ bool operator<(const DocumentKey& lhs, const DocumentKey& rhs) {
 }
 bool operator>(const DocumentKey& lhs, const DocumentKey& rhs) {
   return util::Descending(lhs.CompareTo(rhs));
-}
-
-size_t DocumentKey::Hash() const {
-  return util::Hash(ToString());
 }
 
 std::string DocumentKey::ToString() const {

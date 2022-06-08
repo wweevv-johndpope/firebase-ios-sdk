@@ -65,10 +65,12 @@ class IndexEntry : public util::Comparable<IndexEntry> {
   }
 
   util::ComparisonResult CompareTo(const IndexEntry& rhs) const;
-  size_t Hash() const;
 
   std::string ToString() const;
   friend std::ostream& operator<<(std::ostream& out, const IndexEntry& entry);
+
+  template <typename H>
+  friend H AbslHashValue(H, const IndexEntry&);
 
  private:
   int32_t index_id_;
@@ -76,6 +78,11 @@ class IndexEntry : public util::Comparable<IndexEntry> {
   std::string array_value_;
   std::string directional_value_;
 };
+
+template <typename H>
+H AbslHashValue(H h, const IndexEntry& obj) {
+  return H::combine(std::move(h), obj.index_id(), obj.document_key(), obj.directional_value(), obj.array_value());
+}
 
 }  // namespace index
 }  // namespace firestore

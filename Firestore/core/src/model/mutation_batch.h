@@ -30,6 +30,7 @@
 #include "Firestore/core/src/model/mutation.h"
 #include "Firestore/core/src/model/overlayed_document.h"
 #include "Firestore/core/src/model/types.h"
+#include "absl/container/flat_hash_set.h"
 #include "absl/types/optional.h"
 
 namespace firebase {
@@ -158,7 +159,7 @@ class MutationBatch {
   /**
    * Returns the set of unique keys referenced by all mutations in the batch.
    */
-  DocumentKeySet keys() const;
+  absl::flat_hash_set<DocumentKey> keys() const;
 
   friend bool operator==(const MutationBatch& lhs, const MutationBatch& rhs);
 

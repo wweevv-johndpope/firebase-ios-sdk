@@ -22,6 +22,7 @@
 #include <iosfwd>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
@@ -73,7 +74,8 @@ class DocumentKey {
 
   friend bool operator==(const DocumentKey& lhs, const DocumentKey& rhs);
 
-  size_t Hash() const;
+  template <typename H>
+  friend H AbslHashValue(H, const DocumentKey&);
 
   std::string ToString() const;
 
@@ -112,6 +114,11 @@ inline bool operator>=(const DocumentKey& lhs, const DocumentKey& rhs) {
 struct DocumentKeyHash {
   size_t operator()(const DocumentKey& key) const;
 };
+
+template <typename H>
+H AbslHashValue(H h, const DocumentKey& obj) {
+  return H::combine(std::move(h), *obj.path_);
+}
 
 }  // namespace model
 }  // namespace firestore

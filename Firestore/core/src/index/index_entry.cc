@@ -16,7 +16,6 @@
 
 #include "Firestore/core/src/index/index_entry.h"
 
-#include "Firestore/core/src/util/hashing.h"
 #include "absl/strings/str_cat.h"
 
 namespace firebase {
@@ -61,11 +60,6 @@ std::string IndexEntry::ToString() const {
 
 std::ostream& operator<<(std::ostream& out, const IndexEntry& entry) {
   return out << entry.ToString();
-}
-
-size_t IndexEntry::Hash() const {
-  return util::Hash(index_id(), document_key(), directional_value(),
-                    array_value());
 }
 
 }  // namespace index

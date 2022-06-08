@@ -16,15 +16,9 @@
 
 #include "Firestore/core/src/api/document_change.h"
 
-#include "Firestore/core/src/util/hashing.h"
-
 namespace firebase {
 namespace firestore {
 namespace api {
-
-size_t DocumentChange::Hash() const {
-  return util::Hash(type_, document_, old_index_, new_index_);
-}
 
 bool operator==(const DocumentChange& lhs, const DocumentChange& rhs) {
   return lhs.type() == rhs.type() && lhs.document() == rhs.document() &&

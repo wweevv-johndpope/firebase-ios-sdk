@@ -20,6 +20,7 @@
 
 #include "Firestore/core/src/bundle/bundle_metadata.h"
 #include "Firestore/core/src/bundle/named_query.h"
+#include "absl/container/flat_hash_set.h"
 
 namespace firebase {
 namespace firestore {
@@ -45,8 +46,9 @@ class BundleCallback {
       const std::string& bundle_id) = 0;
 
   /** Saves the given NamedQuery to local persistence. */
-  virtual void SaveNamedQuery(const NamedQuery& query,
-                              const model::DocumentKeySet& keys) = 0;
+  virtual void SaveNamedQuery(
+      const NamedQuery& query,
+      const absl::flat_hash_set<model::DocumentKey>& keys) = 0;
 
   /** Saves the given BundleMetadata to local persistence. */
   virtual void SaveBundle(const BundleMetadata& metadata) = 0;

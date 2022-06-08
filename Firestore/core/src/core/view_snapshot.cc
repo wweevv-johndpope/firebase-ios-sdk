@@ -19,7 +19,6 @@
 #include <ostream>
 
 #include "Firestore/core/src/model/document_set.h"
-#include "Firestore/core/src/util/hashing.h"
 #include "Firestore/core/src/util/string_format.h"
 #include "Firestore/core/src/util/to_string.h"
 
@@ -29,7 +28,6 @@ namespace core {
 
 using model::Document;
 using model::DocumentKey;
-using model::DocumentKeySet;
 using model::DocumentSet;
 using util::StringFormat;
 
@@ -140,7 +138,7 @@ ViewSnapshot::ViewSnapshot(Query query,
                            DocumentSet documents,
                            DocumentSet old_documents,
                            std::vector<DocumentViewChange> document_changes,
-                           model::DocumentKeySet mutated_keys,
+                           absl::flat_hash_set<DocumentKey> mutated_keys,
                            bool from_cache,
                            bool sync_state_changed,
                            bool excludes_metadata_changes)
@@ -157,7 +155,7 @@ ViewSnapshot::ViewSnapshot(Query query,
 ViewSnapshot ViewSnapshot::FromInitialDocuments(
     Query query,
     DocumentSet documents,
-    DocumentKeySet mutated_keys,
+    absl::flat_hash_set<DocumentKey> mutated_keys,
     bool from_cache,
     bool excludes_metadata_changes) {
   std::vector<DocumentViewChange> view_changes;
@@ -192,16 +190,6 @@ std::string ViewSnapshot::ToString() const {
 
 std::ostream& operator<<(std::ostream& out, const ViewSnapshot& value) {
   return out << value.ToString();
-}
-
-size_t ViewSnapshot::Hash() const {
-  // Note: We are omitting `mutated_keys_` from the hash, since we don't have a
-  // straightforward way to compute its hash value. Since `ViewSnapshot` is
-  // currently not stored in any dictionaries, this has no side effects.
-
-  return util::Hash(query(), documents(), old_documents(), document_changes(),
-                    from_cache(), sync_state_changed(),
-                    excludes_metadata_changes());
 }
 
 bool operator==(const ViewSnapshot& lhs, const ViewSnapshot& rhs) {

@@ -111,10 +111,6 @@ MutableDocument MutableDocument::Clone() const {
           document_state_};
 }
 
-size_t MutableDocument::Hash() const {
-  return key_.Hash();
-}
-
 std::string MutableDocument::ToString() const {
   std::stringstream stream;
   stream << "MutableDocument(key=" << key_ << ", type=" << document_type_

@@ -29,9 +29,9 @@
 #include "Firestore/core/src/immutable/sorted_map.h"
 #include "Firestore/core/src/model/document.h"
 #include "Firestore/core/src/model/document_key.h"
-#include "Firestore/core/src/model/document_key_set.h"
 #include "Firestore/core/src/model/document_set.h"
 #include "Firestore/core/src/util/statusor.h"
+#include "absl/container/flat_hash_set.h"
 
 namespace firebase {
 namespace firestore {
@@ -101,7 +101,7 @@ class ViewSnapshot {
                model::DocumentSet documents,
                model::DocumentSet old_documents,
                std::vector<DocumentViewChange> document_changes,
-               model::DocumentKeySet mutated_keys,
+               absl::flat_hash_set<model::DocumentKey> mutated_keys,
                bool from_cache,
                bool sync_state_changed,
                bool excludes_metadata_changes);
@@ -110,11 +110,7 @@ class ViewSnapshot {
    * Returns a view snapshot as if all documents in the snapshot were
    * added.
    */
-  static ViewSnapshot FromInitialDocuments(Query query,
-                                           model::DocumentSet documents,
-                                           model::DocumentKeySet mutated_keys,
-                                           bool from_cache,
-                                           bool excludes_metadata_changes);
+  static ViewSnapshot FromInitialDocuments(Query query, model::DocumentSet documents, absl::flat_hash_set<model::DocumentKey> mutated_keys, bool from_cache, bool excludes_metadata_changes);
 
   /** The query this view is tracking the results for. */
   const Query& query() const;
@@ -155,13 +151,15 @@ class ViewSnapshot {
   }
 
   /** The document in this snapshot that have unconfirmed writes. */
-  model::DocumentKeySet mutated_keys() const {
+  absl::flat_hash_set<model::DocumentKey> mutated_keys() const {
     return mutated_keys_;
   }
 
   std::string ToString() const;
   friend std::ostream& operator<<(std::ostream& out, const ViewSnapshot& value);
-  size_t Hash() const;
+
+  template <typename H>
+  friend H AbslHashValue(H, const ViewSnapshot&);
 
  private:
   Query query_;
@@ -169,7 +167,7 @@ class ViewSnapshot {
   model::DocumentSet documents_;
   model::DocumentSet old_documents_;
   std::vector<DocumentViewChange> document_changes_;
-  model::DocumentKeySet mutated_keys_;
+  absl::flat_hash_set<model::DocumentKey> mutated_keys_;
 
   bool from_cache_ = false;
   bool sync_state_changed_ = false;
@@ -180,6 +178,14 @@ using ViewSnapshotListener = std::unique_ptr<EventListener<ViewSnapshot>>;
 using ViewSnapshotSharedListener = std::shared_ptr<EventListener<ViewSnapshot>>;
 
 bool operator==(const ViewSnapshot& lhs, const ViewSnapshot& rhs);
+
+template <typename H>
+H AbslHashValue(H h, const ViewSnapshot& obj) {
+  // Note: We are omitting `mutated_keys_` from the hash, since we don't have a
+  // straightforward way to compute its hash value. Since `ViewSnapshot` is
+  // currently not stored in any dictionaries, this has no side effects.
+  return H::combine(std::move(h), obj.query(), obj.documents(), obj.old_documents(), obj.document_changes(), obj.from_cache(), obj.sync_state_changed(), obj.excludes_metadata_changes());
+}
 
 }  // namespace core
 }  // namespace firestore

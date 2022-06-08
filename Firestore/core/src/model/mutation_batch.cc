@@ -20,7 +20,6 @@
 #include <utility>
 
 #include "Firestore/core/src/model/document.h"
-#include "Firestore/core/src/model/document_key_set.h"
 #include "Firestore/core/src/model/mutable_document.h"
 #include "Firestore/core/src/model/mutation_batch_result.h"
 #include "Firestore/core/src/util/hard_assert.h"
@@ -145,10 +144,10 @@ MutationBatch::MutationByDocumentKeyMap MutationBatch::ApplyToLocalDocumentSet(
   return overlays;
 }
 
-DocumentKeySet MutationBatch::keys() const {
-  DocumentKeySet set;
+absl::flat_hash_set<DocumentKey> MutationBatch::keys() const {
+  absl::flat_hash_set<DocumentKey> set;
   for (const Mutation& mutation : mutations_) {
-    set = set.insert(mutation.key());
+    set.insert(mutation.key());
   }
   return set;
 }

@@ -24,6 +24,7 @@
 #include "Firestore/core/src/model/mutation.h"
 #include "Firestore/core/src/model/overlay.h"
 #include "Firestore/core/src/model/resource_path.h"
+#include "absl/container/flat_hash_set.h"
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
 
@@ -59,8 +60,7 @@ class DocumentOverlayCache {
    * Gets the saved overlay mutation for the given document keys. Skips keys for
    * which there are no overlays.
    */
-  virtual void GetOverlays(model::OverlayByDocumentKeyMap& dest,
-                           const model::DocumentKeySet& keys) const;
+  virtual void GetOverlays(model::OverlayByDocumentKeyMap& dest, const absl::flat_hash_set<model::DocumentKey>& keys) const;
 
   /**
    * Saves the given document key to mutation map to persistence as overlays.

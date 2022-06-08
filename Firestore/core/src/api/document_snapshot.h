@@ -47,7 +47,8 @@ class DocumentSnapshot {
                                          model::DocumentKey key,
                                          SnapshotMetadata metadata);
 
-  size_t Hash() const;
+  template <typename H>
+  friend H AbslHashValue(H, const DocumentSnapshot&);
 
   bool exists() const;
   const absl::optional<model::Document>& internal_document() const;
@@ -93,6 +94,12 @@ inline bool operator!=(const DocumentSnapshot& lhs,
                        const DocumentSnapshot& rhs) {
   return !(lhs == rhs);
 }
+
+template <typename H>
+H AbslHashValue(H h, const DocumentSnapshot& obj) {
+  return H::combine(std::move(h), obj.firestore_, obj.internal_key_, obj.internal_document_, obj.metadata_);
+}
+
 
 }  // namespace api
 }  // namespace firestore

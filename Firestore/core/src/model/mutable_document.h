@@ -205,7 +205,8 @@ class MutableDocument {
     return document_type_ == DocumentType ::kUnknownDocument;
   }
 
-  size_t Hash() const;
+  template <typename H>
+  friend H AbslHashValue(H, const MutableDocument&);
 
   std::string ToString() const;
 
@@ -246,6 +247,11 @@ std::ostream& operator<<(std::ostream& os, const MutableDocument& doc);
 
 inline bool operator!=(const MutableDocument& lhs, const MutableDocument& rhs) {
   return !(lhs == rhs);
+}
+
+template <typename H>
+H AbslHashValue(H h, const MutableDocument& obj) {
+  return H::combine(std::move(h), obj.key_);
 }
 
 }  // namespace model

@@ -41,8 +41,6 @@ class DocumentChange {
         new_index_(new_index) {
   }
 
-  size_t Hash() const;
-
   Type type() const {
     return type_;
   }
@@ -63,6 +61,9 @@ class DocumentChange {
     return document_.firestore();
   }
 
+  template <typename H>
+  friend H AbslHashValue(H, const DocumentChange&);
+
   /**
    * A sentinel return value for old_index() and new_index() indicating that
    * there's no relevant index to return because the document was newly added
@@ -78,6 +79,11 @@ class DocumentChange {
 };
 
 bool operator==(const DocumentChange& lhs, const DocumentChange& rhs);
+
+template <typename H>
+H AbslHashValue(H h, const DocumentChange& obj) {
+  return H::combine(std::move(h), obj.type_, obj.document_, obj.old_index_, obj.new_index_);
+}
 
 }  // namespace api
 }  // namespace firestore

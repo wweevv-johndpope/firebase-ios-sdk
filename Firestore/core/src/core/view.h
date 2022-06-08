@@ -21,10 +21,10 @@
 #include <vector>
 
 #include "Firestore/core/src/core/view_snapshot.h"
-#include "Firestore/core/src/model/document_key_set.h"
 #include "Firestore/core/src/model/document_set.h"
 #include "Firestore/core/src/model/types.h"
 #include "Firestore/core/src/remote/remote_event.h"
+#include "absl/container/flat_hash_set.h"
 
 namespace firebase {
 namespace firestore {
@@ -69,7 +69,7 @@ class ViewDocumentChanges {
  public:
   ViewDocumentChanges(model::DocumentSet new_documents,
                       DocumentViewChangeSet changes,
-                      model::DocumentKeySet mutated_keys,
+                      absl::flat_hash_set<model::DocumentKey> mutated_keys,
                       bool needs_refill);
 
   /** The new set of docs that should be in the view. */
@@ -82,7 +82,7 @@ class ViewDocumentChanges {
     return change_set_;
   }
 
-  const model::DocumentKeySet& mutated_keys() const {
+  const absl::flat_hash_set<model::DocumentKey>& mutated_keys() const {
     return mutated_keys_;
   }
 
@@ -98,7 +98,7 @@ class ViewDocumentChanges {
  private:
   model::DocumentSet document_set_;
   core::DocumentViewChangeSet change_set_;
-  model::DocumentKeySet mutated_keys_;
+  absl::flat_hash_set<model::DocumentKey> mutated_keys_;
   bool needs_refill_ = false;
 };
 
@@ -135,13 +135,13 @@ class ViewChange {
  */
 class View {
  public:
-  View(Query query, model::DocumentKeySet remote_documents);
+  View(Query query, absl::flat_hash_set<model::DocumentKey> remote_documents);
 
   /**
    * The set of remote documents that the server has told us belongs to the
    * target associated with this view.
    */
-  const model::DocumentKeySet& synced_documents() const {
+  const absl::flat_hash_set<model::DocumentKey>& synced_documents() const {
     return synced_documents_;
   }
 
@@ -211,13 +211,13 @@ class View {
   model::DocumentSet document_set_;
 
   /** Documents included in the remote target. */
-  model::DocumentKeySet synced_documents_;
+  absl::flat_hash_set<model::DocumentKey> synced_documents_;
 
   /** Documents in the view but not in the remote target */
-  model::DocumentKeySet limbo_documents_;
+  absl::flat_hash_set<model::DocumentKey> limbo_documents_;
 
   /** Document Keys that have local changes. */
-  model::DocumentKeySet mutated_keys_;
+  absl::flat_hash_set<model::DocumentKey> mutated_keys_;
 
   SyncState sync_state_ = SyncState::None;
 
