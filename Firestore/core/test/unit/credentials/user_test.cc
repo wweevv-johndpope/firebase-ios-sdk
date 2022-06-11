@@ -16,6 +16,7 @@
 
 #include "Firestore/core/src/credentials/user.h"
 
+#include "absl/hash/hash_testing.h"
 #include "gtest/gtest.h"
 
 namespace firebase {
@@ -52,6 +53,16 @@ TEST(User, Comparison) {
 TEST(User, Hash) {
   const HashUser hash;
   EXPECT_EQ(hash(User("abc")), hash(User("abc")));
+}
+
+TEST(User, AbslHashValue) {
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+      User(),
+      User::Unauthenticated(),
+      User("a"),
+      User("b"),
+      User("c"),
+  }));
 }
 
 }  // namespace credentials

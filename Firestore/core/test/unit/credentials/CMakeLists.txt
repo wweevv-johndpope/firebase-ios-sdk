@@ -21,6 +21,7 @@ firebase_ios_add_test(firestore_credentials_test ${sources})
 
 target_link_libraries(
   firestore_credentials_test PRIVATE
+  GMock::GMock
   firestore_core
 )
 

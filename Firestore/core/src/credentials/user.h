@@ -75,6 +75,11 @@ class User {
 
   friend bool operator==(const User& lhs, const User& rhs);
 
+  template <typename H>
+  friend H AbslHashValue(H h, const User& obj) {
+    return H::combine(std::move(h), obj.uid());
+  }
+
  private:
   std::string uid_;
   bool is_authenticated_;
