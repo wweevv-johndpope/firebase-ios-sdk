@@ -162,6 +162,11 @@ class BasePath {
     return util::Hash(segments_);
   }
 
+  template <typename H>
+  friend H AbslHashValue(H h, const BasePath& obj) {
+    return H::combine(std::move(h), obj.segments_);
+  }
+
  protected:
   BasePath() = default;
   template <typename IterT>

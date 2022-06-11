@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 
+#include "absl/hash/hash_testing.h"
 #include "gtest/gtest.h"
 
 namespace firebase {
@@ -98,6 +99,18 @@ TEST(ResourcePath, Parsing) {
 TEST(ResourcePath, ParseFailures) {
   ASSERT_ANY_THROW(ResourcePath::FromString("//"));
   ASSERT_ANY_THROW(ResourcePath::FromString("foo//bar"));
+}
+
+TEST(ResourcePath, AbslHashValue) {
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+      ResourcePath(),
+      ResourcePath{"a"},
+      ResourcePath{"b"},
+      ResourcePath{"c"},
+      ResourcePath{"a", "b"},
+      ResourcePath{"a", "c"},
+      ResourcePath{"a", "b", "c"},
+  }));
 }
 
 }  // namespace model

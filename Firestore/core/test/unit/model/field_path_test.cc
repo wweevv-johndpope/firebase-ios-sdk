@@ -22,6 +22,7 @@
 
 #include "Firestore/core/src/util/statusor.h"
 #include "Firestore/core/test/unit/testutil/status_testing.h"
+#include "absl/hash/hash_testing.h"
 #include "gtest/gtest.h"
 
 namespace firebase {
@@ -280,6 +281,18 @@ TEST(FieldPath, KeyFieldPath) {
   EXPECT_EQ(key_field_path, Parse(key_field_path.CanonicalString()));
   EXPECT_EQ(&key_field_path, &FieldPath::KeyFieldPath());
   EXPECT_NE(key_field_path, Parse(key_field_path.CanonicalString().substr(1)));
+}
+
+TEST(FieldPath, AbslHashValue) {
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+      FieldPath(),
+      FieldPath{"a"},
+      FieldPath{"b"},
+      FieldPath{"c"},
+      FieldPath{"a", "b"},
+      FieldPath{"a", "c"},
+      FieldPath{"a", "b", "c"},
+  }));
 }
 
 }  // namespace model
