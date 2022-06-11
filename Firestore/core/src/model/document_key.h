@@ -22,6 +22,7 @@
 #include <iosfwd>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "absl/strings/string_view.h"
 #include "absl/types/optional.h"
@@ -76,6 +77,11 @@ class DocumentKey {
   size_t Hash() const;
 
   std::string ToString() const;
+
+  template <typename H>
+  friend H AbslHashValue(H h, const DocumentKey& obj) {
+    return H::combine(std::move(h), obj.path_ ? *obj.path_ : *Empty().path_);
+  }
 
   friend std::ostream& operator<<(std::ostream& os, const DocumentKey& key);
 

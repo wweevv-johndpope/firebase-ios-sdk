@@ -24,6 +24,7 @@
 #include "Firestore/core/src/model/resource_path.h"
 #include "Firestore/core/src/util/comparison.h"
 #include "Firestore/core/test/unit/testutil/testutil.h"
+#include "absl/hash/hash_testing.h"
 #include "gtest/gtest.h"
 
 using firebase::firestore::testutil::Key;
@@ -160,6 +161,25 @@ TEST(DocumentKey, Comparator) {
   DocumentKey xyzw = Key("x/y/z/w");
   util::Comparator<DocumentKey> comparator;
   EXPECT_EQ(comparator.Compare(abcd, xyzw), util::ComparisonResult::Ascending);
+}
+
+TEST(DocumentKey, AbslHashValue) {
+  DocumentKey moved_from_document_key;
+  DocumentKey(std::move(moved_from_document_key));
+  DocumentKey key2;
+
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+      DocumentKey(),
+      moved_from_document_key,
+      DocumentKey::FromSegments({}),
+      DocumentKey::FromSegments({"a", "b"}),
+      DocumentKey::FromSegments({"a", "X"}),
+      DocumentKey::FromSegments({"X", "b"}),
+      DocumentKey::FromSegments({"a", "b", "c", "X"}),
+      DocumentKey::FromSegments({"a", "b", "X", "d"}),
+      DocumentKey::FromSegments({"a", "X", "c", "d"}),
+      DocumentKey::FromSegments({"X", "b", "c", "d"}),
+  }));
 }
 
 }  // namespace model
