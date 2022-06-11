@@ -19,7 +19,6 @@
 #include <cstdint>
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -31,6 +30,7 @@
 #include "Firestore/core/src/model/document_key.h"
 #include "Firestore/core/src/model/model_fwd.h"
 #include "Firestore/core/src/util/statusor.h"
+#include "absl/container/flat_hash_map.h"
 #include "absl/types/optional.h"
 
 namespace firebase {
@@ -80,7 +80,7 @@ class BundleLoader {
    * @return A map whose keys are the query names in the loading bundle, and
    * values are matching document keys.
    */
-  std::unordered_map<std::string, model::DocumentKeySet>
+  absl::flat_hash_map<std::string, model::DocumentKeySet>
   GetQueryDocumentMapping();
 
   /**
@@ -92,9 +92,7 @@ class BundleLoader {
   BundleCallback* callback_ = nullptr;
   BundleMetadata metadata_;
   std::vector<NamedQuery> queries_;
-  std::unordered_map<model::DocumentKey,
-                     BundledDocumentMetadata,
-                     model::DocumentKeyHash>
+  absl::flat_hash_map<model::DocumentKey, BundledDocumentMetadata>
       documents_metadata_;
   model::MutableDocumentMap documents_;
 

@@ -17,7 +17,6 @@
 #include "Firestore/core/src/bundle/bundle_loader.h"
 
 #include <memory>
-#include <unordered_map>
 
 #include "Firestore/core/include/firebase/firestore/firestore_errors.h"
 #include "Firestore/core/src/api/load_bundle_task.h"
@@ -27,6 +26,7 @@
 #include "Firestore/core/src/model/document_key_set.h"
 #include "Firestore/core/src/model/model_fwd.h"
 #include "Firestore/core/src/model/mutable_document.h"
+#include "absl/container/flat_hash_map.h"
 
 namespace firebase {
 namespace firestore {
@@ -141,9 +141,9 @@ StatusOr<DocumentMap> BundleLoader::ApplyChanges() {
   return changes;
 }
 
-std::unordered_map<std::string, DocumentKeySet>
+absl::flat_hash_map<std::string, DocumentKeySet>
 BundleLoader::GetQueryDocumentMapping() {
-  std::unordered_map<std::string, DocumentKeySet> result;
+  absl::flat_hash_map<std::string, DocumentKeySet> result;
   for (const auto& named_query : queries_) {
     result.emplace(named_query.query_name(), DocumentKeySet{});
   }
