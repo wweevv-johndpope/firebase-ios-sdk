@@ -877,7 +877,7 @@ NSString *ToTargetIdListString(const ActiveTargetMap &map) {
   }
 
   // Create a copy so we can modify it below
-  std::unordered_map<TargetId, TargetData> actualTargets = [self.driver activeTargets];
+  absl::flat_hash_map<TargetId, TargetData> actualTargets = [self.driver activeTargets];
 
   for (const auto &kv : [self.driver expectedActiveTargets]) {
     TargetId targetID = kv.first;

@@ -22,7 +22,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -58,6 +57,7 @@
 #include "Firestore/core/src/util/to_string.h"
 #include "Firestore/core/test/unit/remote/create_noop_connectivity_monitor.h"
 #include "Firestore/core/test/unit/testutil/async_testing.h"
+#include "absl/container/flat_hash_map.h"
 #include "absl/memory/memory.h"
 
 using firebase::firestore::api::LoadBundleTask;
@@ -189,12 +189,12 @@ NS_ASSUME_NONNULL_BEGIN
   ActiveTargetMap _expectedActiveTargets;
 
   // ivar is declared as mutable.
-  std::unordered_map<User, NSMutableArray<FSTOutstandingWrite *> *, HashUser> _outstandingWrites;
+  absl::flat_hash_map<User, NSMutableArray<FSTOutstandingWrite *> *, HashUser> _outstandingWrites;
   DocumentKeySet _expectedActiveLimboDocuments;
   DocumentKeySet _expectedEnqueuedLimboDocuments;
 
   /** A dictionary for tracking the listens on queries. */
-  std::unordered_map<Query, std::shared_ptr<QueryListener>> _queryListeners;
+  absl::flat_hash_map<Query, std::shared_ptr<QueryListener>> _queryListeners;
 
   DatabaseInfo _databaseInfo;
   User _currentUser;
@@ -537,7 +537,7 @@ NS_ASSUME_NONNULL_BEGIN
   return _syncEngine->GetEnqueuedLimboDocumentResolutions();
 }
 
-- (const std::unordered_map<TargetId, TargetData> &)activeTargets {
+- (const absl::flat_hash_map<TargetId, TargetData> &)activeTargets {
   return _datastore->ActiveTargets();
 }
 

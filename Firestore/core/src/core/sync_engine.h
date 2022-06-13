@@ -22,7 +22,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -37,6 +36,7 @@
 #include "Firestore/core/src/remote/remote_store.h"
 #include "Firestore/core/src/util/random_access_queue.h"
 #include "Firestore/core/src/util/status.h"
+#include "absl/container/flat_hash_map.h"
 #include "absl/strings/string_view.h"
 
 namespace firebase {
@@ -288,22 +288,21 @@ class SyncEngine : public remote::RemoteStoreCallback, public QueryEventSource {
   TargetIdGenerator target_id_generator_;
 
   /** Stores user completion blocks, indexed by User and BatchId. */
-  std::unordered_map<credentials::User,
-                     std::unordered_map<model::BatchId, util::StatusCallback>,
-                     credentials::HashUser>
+  absl::flat_hash_map<credentials::User,
+                      absl::flat_hash_map<model::BatchId, util::StatusCallback>>
       mutation_callbacks_;
 
   /** Stores user callbacks waiting for pending writes to be acknowledged. */
-  std::unordered_map<model::BatchId, std::vector<util::StatusCallback>>
+  absl::flat_hash_map<model::BatchId, std::vector<util::StatusCallback>>
       pending_writes_callbacks_;
 
   // Shared pointers are used to avoid creating and storing two copies of the
   // same `QueryView` and for consistency with other platforms.
   /** QueryViews for all active queries, indexed by query. */
-  std::unordered_map<Query, std::shared_ptr<QueryView>> query_views_by_query_;
+  absl::flat_hash_map<Query, std::shared_ptr<QueryView>> query_views_by_query_;
 
   /** Queries mapped to Targets, indexed by target ID. */
-  std::unordered_map<model::TargetId, std::vector<Query>> queries_by_target_;
+  absl::flat_hash_map<model::TargetId, std::vector<Query>> queries_by_target_;
 
   const size_t max_concurrent_limbo_resolutions_;
 

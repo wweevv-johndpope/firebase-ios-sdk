@@ -26,6 +26,7 @@
 #include "Firestore/core/src/model/resource_path.h"
 #include "Firestore/core/src/nanopb/message.h"
 #include "Firestore/core/test/unit/testutil/testutil.h"
+#include "absl/hash/hash_testing.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
@@ -816,6 +817,19 @@ TEST(QueryTest, MatchesAllDocuments) {
 
   query = base_query.StartingAt(Bound::FromValue(Array("OAK"), true));
   EXPECT_FALSE(query.MatchesAllDocuments());
+}
+
+TEST(QueryTest, AbslHashValue) {
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+      Query(),
+      testutil::Query("coll1"),
+      testutil::Query("coll1/a"),
+      testutil::Query("coll1/b"),
+      testutil::Query("coll2"),
+      testutil::Query("a/b/c").AddingOrderBy(
+          OrderBy(Field("length"), Direction::Descending)),
+      testutil::Query("a/b/c").AddingFilter(Filter("text", "==", "msg1")),
+  }));
 }
 
 }  // namespace core

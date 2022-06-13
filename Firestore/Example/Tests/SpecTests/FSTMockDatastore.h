@@ -17,12 +17,12 @@
 #import <Foundation/Foundation.h>
 
 #include <memory>
-#include <unordered_map>
 #include <vector>
 
 #include "Firestore/core/src/model/model_fwd.h"
 #include "Firestore/core/src/remote/datastore.h"
 #include "Firestore/core/src/util/status_fwd.h"
+#include "absl/container/flat_hash_map.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -75,7 +75,7 @@ class MockDatastore : public Datastore {
   void FailWatchStream(const util::Status& error);
 
   /** Returns the set of active targets on the watch stream. */
-  const std::unordered_map<model::TargetId, local::TargetData>& ActiveTargets() const;
+  const absl::flat_hash_map<model::TargetId, local::TargetData>& ActiveTargets() const;
   /** Helper method to expose watch stream state to verify in tests. */
   bool IsWatchStreamOpen() const;
 

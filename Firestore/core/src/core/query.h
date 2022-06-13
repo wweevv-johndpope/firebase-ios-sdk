@@ -250,6 +250,11 @@ class Query {
   friend bool operator==(const Query& lhs, const Query& rhs);
   size_t Hash() const;
 
+  template <typename H>
+  friend H AbslHashValue(H h, const Query& obj) {
+    return H::combine(std::move(h), obj.CanonicalId());
+  }
+
  private:
   bool MatchesPathAndCollectionGroup(const model::Document& doc) const;
   bool MatchesFilters(const model::Document& doc) const;
@@ -290,16 +295,5 @@ inline bool operator!=(const Query& lhs, const Query& rhs) {
 }  // namespace core
 }  // namespace firestore
 }  // namespace firebase
-
-namespace std {
-
-template <>
-struct hash<firebase::firestore::core::Query> {
-  size_t operator()(const firebase::firestore::core::Query& query) const {
-    return query.Hash();
-  }
-};
-
-}  // namespace std
 
 #endif  // FIRESTORE_CORE_SRC_CORE_QUERY_H_

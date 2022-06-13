@@ -37,6 +37,7 @@
 #include "Firestore/core/src/util/log.h"
 #include "Firestore/core/src/util/string_apple.h"
 #include "Firestore/core/test/unit/remote/create_noop_connectivity_monitor.h"
+#include "absl/container/flat_hash_map.h"
 #include "absl/memory/memory.h"
 #include "grpcpp/completion_queue.h"
 
@@ -85,7 +86,7 @@ class MockWatchStream : public WatchStream {
         callback_{callback} {
   }
 
-  const std::unordered_map<TargetId, TargetData>& ActiveTargets() const {
+  const absl::flat_hash_map<TargetId, TargetData>& ActiveTargets() const {
     return active_targets_;
   }
 
@@ -158,7 +159,7 @@ class MockWatchStream : public WatchStream {
 
  private:
   bool open_ = false;
-  std::unordered_map<TargetId, TargetData> active_targets_;
+  absl::flat_hash_map<TargetId, TargetData> active_targets_;
   MockDatastore* datastore_ = nullptr;
   WatchStreamCallback* callback_ = nullptr;
 };
@@ -292,7 +293,7 @@ void MockDatastore::FailWatchStream(const Status& error) {
   watch_stream_->FailStream(error);
 }
 
-const std::unordered_map<TargetId, TargetData>& MockDatastore::ActiveTargets() const {
+const absl::flat_hash_map<TargetId, TargetData>& MockDatastore::ActiveTargets() const {
   return watch_stream_->ActiveTargets();
 }
 

@@ -433,7 +433,7 @@ void SyncEngine::NotifyUser(BatchId batch_id, Status status) {
     return;
   }
 
-  std::unordered_map<BatchId, StatusCallback>& callbacks = it->second;
+  absl::flat_hash_map<BatchId, StatusCallback>& callbacks = it->second;
   auto callback_it = callbacks.find(batch_id);
   if (callback_it != callbacks.end()) {
     callback_it->second(std::move(status));

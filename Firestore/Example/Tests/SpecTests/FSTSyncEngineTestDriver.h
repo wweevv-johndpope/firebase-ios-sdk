@@ -19,7 +19,6 @@
 #include <cstddef>
 #include <map>
 #include <memory>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -35,6 +34,7 @@
 #include "Firestore/core/src/remote/watch_change.h"
 #include "Firestore/core/src/util/async_queue.h"
 #include "Firestore/core/src/util/empty.h"
+#include "absl/container/flat_hash_map.h"
 
 namespace firebase {
 namespace firestore {
@@ -57,7 +57,7 @@ namespace remote = firebase::firestore::remote;
 
 // A map holds expected information about currently active targets. The keys are
 // target ID, and the values are a vector of `TargetData`s mapped to the target.
-using ActiveTargetMap = std::unordered_map<model::TargetId, std::vector<local::TargetData>>;
+using ActiveTargetMap = absl::flat_hash_map<model::TargetId, std::vector<local::TargetData>>;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -90,8 +90,8 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /** Mapping of user => array of FSTMutations for that user. */
-typedef std::
-    unordered_map<credentials::User, NSMutableArray<FSTOutstandingWrite *> *, credentials::HashUser>
+typedef absl::
+    flat_hash_map<credentials::User, NSMutableArray<FSTOutstandingWrite *> *, credentials::HashUser>
         FSTOutstandingWriteQueues;
 
 /**
@@ -375,7 +375,7 @@ typedef std::
 - (void)removeSnapshotsInSyncListener;
 
 /** The set of active targets as observed on the watch stream. */
-- (const std::unordered_map<model::TargetId, local::TargetData> &)activeTargets;
+- (const absl::flat_hash_map<model::TargetId, local::TargetData> &)activeTargets;
 
 /** The expected set of active targets, keyed by target ID. */
 - (const ActiveTargetMap &)expectedActiveTargets;

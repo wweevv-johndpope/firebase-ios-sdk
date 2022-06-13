@@ -18,7 +18,6 @@
 #define FIRESTORE_CORE_SRC_CORE_EVENT_MANAGER_H_
 
 #include <memory>
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -28,6 +27,7 @@
 #include "Firestore/core/src/model/model_fwd.h"
 #include "Firestore/core/src/util/empty.h"
 #include "Firestore/core/src/util/status_fwd.h"
+#include "absl/container/flat_hash_map.h"
 #include "absl/types/optional.h"
 
 namespace firebase {
@@ -105,7 +105,7 @@ class EventManager : public SyncEngineCallback {
 
   QueryEventSource* query_event_source_ = nullptr;
   model::OnlineState online_state_ = model::OnlineState::Unknown;
-  std::unordered_map<core::Query, QueryListenersInfo> queries_;
+  absl::flat_hash_map<core::Query, QueryListenersInfo> queries_;
   std::unordered_set<std::shared_ptr<EventListener<util::Empty>>>
       snapshots_in_sync_listeners_;
 };
