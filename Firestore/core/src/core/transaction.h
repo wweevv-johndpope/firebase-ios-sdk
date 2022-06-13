@@ -19,8 +19,6 @@
 
 #include <functional>
 #include <memory>
-#include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 #include "Firestore/core/src/model/document_key.h"
@@ -28,6 +26,8 @@
 #include "Firestore/core/src/model/snapshot_version.h"
 #include "Firestore/core/src/util/status.h"
 #include "Firestore/core/src/util/statusor.h"
+#include "absl/container/flat_hash_map.h"
+#include "absl/container/flat_hash_set.h"
 #include "absl/types/any.h"
 #include "absl/types/optional.h"
 
@@ -147,11 +147,9 @@ class Transaction {
    * When there's more than one write to the same key in a transaction, any
    * writes after the first are handled differently.
    */
-  std::unordered_set<model::DocumentKey, model::DocumentKeyHash> written_docs_;
+  absl::flat_hash_set<model::DocumentKey, model::DocumentKeyHash> written_docs_;
 
-  std::unordered_map<model::DocumentKey,
-                     model::SnapshotVersion,
-                     model::DocumentKeyHash>
+  absl::flat_hash_map<model::DocumentKey, model::SnapshotVersion>
       read_versions_;
 };
 
