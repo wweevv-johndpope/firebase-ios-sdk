@@ -181,6 +181,15 @@ class Message {
     return owns_proto_;
   }
 
+  template <typename H>
+  friend H AbslHashValue(H h, const Message& obj) {
+    if (obj) {
+      return H::combine(std::move(h), *obj);
+    } else {
+      return H::combine(std::move(h), "EmptyMessage");
+    }
+  }
+
  private:
   // Important: this function does *not* modify `owns_proto_`.
   void Free() {
@@ -247,6 +256,15 @@ class SharedMessage {
 
   const T* operator->() const {
     return get();
+  }
+
+  template <typename H>
+  friend H AbslHashValue(H h, const SharedMessage& obj) {
+    if (obj.message_) {
+      return H::combine(std::move(h), *obj.message_);
+    } else {
+      return H::combine(std::move(h), "EmptySharedMessage");
+    }
   }
 
  private:

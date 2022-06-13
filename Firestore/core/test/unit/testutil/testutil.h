@@ -269,6 +269,22 @@ nanopb::Message<google_firestore_v1_Value> Map(Args... key_value_pairs) {
   return details::MakeMap(std::move(key_value_pairs)...);
 }
 
+/**
+ * Creates a google_firestore_v1_MapValue from the given key/value pairs.
+ *
+ * @param key_value_pairs Alternating strings naming keys and values that can
+ *     be passed to Value().
+ */
+template <typename... Args>
+nanopb::Message<google_firestore_v1_MapValue> MapValue(
+    Args... key_value_pairs) {
+  nanopb::Message<google_firestore_v1_Value> map =
+      Map(std::forward<Args>(key_value_pairs)...);
+  nanopb::Message<google_firestore_v1_MapValue> result(map->map_value);
+  map->map_value = {};
+  return result;
+}
+
 model::DocumentKey Key(absl::string_view path);
 
 model::FieldPath Field(absl::string_view field);
