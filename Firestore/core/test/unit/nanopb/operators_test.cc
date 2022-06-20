@@ -151,18 +151,28 @@ TEST(NanopbOperatorsTest, ArrayValue_OperatorLessThan_ByteStringValues) {
   EXPECT_FALSE(*Array(ByteString("elem2")) < *Array(ByteString("elem1")));
 }
 
-TEST(NanopbOperatorsTest, MapValue_OperatorLessThan_EqualMaps) {
-  EXPECT_FALSE(*MapValue() < *MapValue());
-  EXPECT_FALSE(*MapValue("A", 42) < *MapValue("B", 42));
-  EXPECT_FALSE(*MapValue("A", 42.0) < *MapValue("B", 42.0));
-  TODO: Add some more types here
-}
-
 TEST(NanopbOperatorsTest, MapValue_OperatorLessThan_DifferentLengths) {
   Message<google_firestore_v1_MapValue> short_map = MapValue("Z", 42);
   Message<google_firestore_v1_MapValue > long_map = MapValue("A", 42, "B", 42);
   EXPECT_TRUE(*short_map < *long_map);
   EXPECT_FALSE(*long_map < *short_map);
+}
+
+TEST(NanopbOperatorsTest, MapValue_OperatorLessThan_EqualMaps) {
+  EXPECT_FALSE(*MapValue() < *MapValue());
+  EXPECT_FALSE(*MapValue("key", true) < *MapValue("key", true));
+  EXPECT_FALSE(*MapValue("key", false) < *MapValue("key", false));
+  EXPECT_FALSE(*MapValue("key", 1) < *MapValue("key", 1));
+  EXPECT_FALSE(*MapValue("key", 5.0) < *MapValue("key", 5.0));
+  EXPECT_FALSE(*MapValue("key", Ref("a", "b")) < *MapValue("key", Ref("a", "b")));
+  EXPECT_FALSE(*MapValue("key", Map("key", 42)) < *MapValue("key", Map("key", 42)));
+  EXPECT_FALSE(*MapValue("key", GeoPoint(1, 2)) < *MapValue("key", GeoPoint(1, 2)));
+  EXPECT_FALSE(*MapValue("key", MapValue("abc", 42)) < *MapValue("key", MapValue("abc", 42)));
+  EXPECT_FALSE(*MapValue("key", Timestamp(1, 2)) < *MapValue("key", Timestamp(1, 2)));
+  EXPECT_FALSE(*MapValue("key", nullptr) < *MapValue("key", nullptr));
+  EXPECT_FALSE(*MapValue("key", "string") < *MapValue("key", "string"));
+  EXPECT_FALSE(*MapValue("key", ByteString()) < *MapValue("key", ByteString()));
+  EXPECT_FALSE(*MapValue("key1", 12, "key2", 5.0, "key3", false, "key4", "abc") < *MapValue("key1", 12, "key2", 5.0, "key3", false, "key4", "abc"));
 }
 
 TEST(NanopbOperatorsTest, MapValue_OperatorLessThan_DifferentKeys) {
@@ -193,6 +203,91 @@ TEST(NanopbOperatorsTest, MapValue_OperatorLessThan_DifferentKeys_OrderIsIgnored
   EXPECT_FALSE(*MapValue("Z", 42, "B", 42, "A", 42) < *MapValue("A", 42, "B", 42, "C", 42));
   EXPECT_TRUE(*MapValue("A", 42, "B", 42, "C", 42) < *MapValue("Z", 42, "A", 42, "B", 42));
   EXPECT_FALSE(*MapValue("Z", 42, "A", 42, "B", 42) < *MapValue("A", 42, "B", 42, "C", 42));
+}
+
+TEST(NanopbOperatorsTest, MapValue_OperatorLessThan_DifferentTypes) {
+  EXPECT_TRUE(*MapValue("key", true) < *MapValue("key", 42));
+  EXPECT_FALSE(*MapValue("key", 42) < *MapValue("key", true));
+  EXPECT_TRUE(*MapValue("key", 42) < *MapValue("key", 5.0));
+  EXPECT_FALSE(*MapValue("key", 5.0) < *MapValue("key", 42));
+  EXPECT_TRUE(*MapValue("key", 5.0) < *MapValue("key", Ref("a", "b")));
+  EXPECT_FALSE(*MapValue("key", Ref("a", "b")) < *MapValue("key", 5.0));
+  EXPECT_TRUE(*MapValue("key", Ref("a", "b")) < *MapValue("key", Map()));
+  EXPECT_FALSE(*MapValue("key", Map()) < *MapValue("key", Ref("a", "b")));
+  EXPECT_TRUE(*MapValue("key", Map()) < *MapValue("key", GeoPoint(1, 1)));
+  EXPECT_FALSE(*MapValue("key", GeoPoint(1, 1)) < *MapValue("key", Map()));
+  EXPECT_TRUE(*MapValue("key", GeoPoint(1, 1)) < *MapValue("key", Array()));
+  EXPECT_FALSE(*MapValue("key", Array()) < *MapValue("key", GeoPoint(1, 1)));
+  EXPECT_TRUE(*MapValue("key", Array()) < *MapValue("key", Timestamp(1, 1)));
+  EXPECT_FALSE(*MapValue("key", Timestamp(1, 1)) < *MapValue("key", Array()));
+  EXPECT_TRUE(*MapValue("key", Timestamp(1, 1)) < *MapValue("key", Value(nullptr)));
+  EXPECT_FALSE(*MapValue("key", Value(nullptr)) < *MapValue("key", Timestamp(1, 1)));
+  EXPECT_TRUE(*MapValue("key", Value(nullptr)) < *MapValue("key", "string"));
+  EXPECT_FALSE(*MapValue("key", "string") < *MapValue("key", Value(nullptr)));
+  EXPECT_TRUE(*MapValue("key", "string") < *MapValue("key", ByteString("byte")));
+  EXPECT_FALSE(*MapValue("key", ByteString("byte")) < *MapValue("key", "string"));
+}
+
+TEST(NanopbOperatorsTest, MapValue_OperatorLessThan_BooleanValues) {
+  EXPECT_TRUE(*MapValue("key", false) < *MapValue("key", true));
+  EXPECT_FALSE(*MapValue("key", true) < *MapValue("key", false));
+}
+
+TEST(NanopbOperatorsTest, MapValue_OperatorLessThan_IntegerValues) {
+  EXPECT_TRUE(*MapValue("key", 1) < *MapValue("key", 2));
+  EXPECT_FALSE(*MapValue("key", 2) < *MapValue("key", 1));
+}
+
+TEST(NanopbOperatorsTest, MapValue_OperatorLessThan_DoubleValues) {
+  EXPECT_TRUE(*MapValue("key", 1.0) < *MapValue("key", 2.0));
+  EXPECT_FALSE(*MapValue("key", 2.0) < *MapValue("key", 1.0));
+}
+
+TEST(NanopbOperatorsTest, MapValue_OperatorLessThan_ReferenceValues) {
+  EXPECT_TRUE(*MapValue("key", Ref("a", "b")) < *MapValue("key", Ref("x", "y")));
+  EXPECT_FALSE(*MapValue("key", Ref("x", "y")) < *MapValue("key", Ref("a", "b")));
+}
+
+TEST(NanopbOperatorsTest, MapValue_OperatorLessThan_MapValues) {
+  EXPECT_TRUE(*MapValue("key", Map("k1", "v1")) < *MapValue("key", Map("k2", "v2")));
+  EXPECT_FALSE(*MapValue("key", Map("k2", "v2")) < *MapValue("key", Map("k1", "v1")));
+  EXPECT_TRUE(*MapValue("key", Map()) < *MapValue("key", Map("k2", "v2")));
+  EXPECT_FALSE(*MapValue("key", Map("k2", "v2")) < *MapValue("key", Map()));
+  EXPECT_TRUE(*MapValue("key", Map("k2", 0, "k1", 0)) < *MapValue("key", Map("k1", 0, "k3", 0)));
+  EXPECT_FALSE(*MapValue("key", Map("k1", 0, "k3", 0)) < *MapValue("key", Map("k2", 0, "k1", 0)));
+}
+
+TEST(NanopbOperatorsTest, MapValue_OperatorLessThan_GeoPointValues) {
+  EXPECT_TRUE(*MapValue("key", GeoPoint(1, 2)) < *MapValue("key", GeoPoint(2, 3)));
+  EXPECT_FALSE(*MapValue("key", GeoPoint(2, 3)) < *MapValue("key", GeoPoint(1, 2)));
+}
+
+TEST(NanopbOperatorsTest, MapValue_OperatorLessThan_ArrayValues) {
+  EXPECT_TRUE(*MapValue("key", Array()) < *MapValue("key", Array(1)));
+  EXPECT_FALSE(*MapValue("key", Array(1)) < *MapValue("key", Array()));
+  EXPECT_TRUE(*MapValue("key", Array(0)) < *MapValue("key", Array(1)));
+  EXPECT_FALSE(*MapValue("key", Array(1)) < *MapValue("key", Array(0)));
+  EXPECT_TRUE(*MapValue("key", Array(0, 1, 2)) < *MapValue("key", Array(0, 1, 99)));
+  EXPECT_FALSE(*MapValue("key", Array(0, 1, 99)) < *MapValue("key", Array(0, 1, 2)));
+}
+
+TEST(NanopbOperatorsTest, MapValue_OperatorLessThan_TimestampValues) {
+  EXPECT_TRUE(*MapValue("key", Timestamp(1, 2)) < *MapValue("key", Timestamp(2, 3)));
+  EXPECT_FALSE(*MapValue("key", Timestamp(2, 3)) < *MapValue("key", Timestamp(1, 2)));
+}
+
+TEST(NanopbOperatorsTest, MapValue_OperatorLessThan_NullValues) {
+  EXPECT_FALSE(*MapValue("key", Value(nullptr)) < *MapValue("key", Value(nullptr)));
+}
+
+TEST(NanopbOperatorsTest, MapValue_OperatorLessThan_StringValues) {
+  EXPECT_TRUE(*MapValue("key", "elem1") < *MapValue("key", "elem2"));
+  EXPECT_FALSE(*MapValue("key", "elem2") < *MapValue("key", "elem1"));
+}
+
+TEST(NanopbOperatorsTest, MapValue_OperatorLessThan_ByteStringValues) {
+  EXPECT_TRUE(*MapValue("key", ByteString("elem1")) < *MapValue("key", ByteString("elem2")));
+  EXPECT_FALSE(*MapValue("key", ByteString("elem2")) < *MapValue("key", ByteString("elem1")));
 }
 
 }  //  namespace
