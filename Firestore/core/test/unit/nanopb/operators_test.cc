@@ -31,6 +31,7 @@ using nanopb::ByteString;
 using testutil::Array;
 using testutil::Map;
 using testutil::MapValue;
+using testutil::MapValue_FieldsEntry;
 using testutil::Ref;
 using testutil::Value;
 
@@ -288,6 +289,49 @@ TEST(NanopbOperatorsTest, MapValue_OperatorLessThan_StringValues) {
 TEST(NanopbOperatorsTest, MapValue_OperatorLessThan_ByteStringValues) {
   EXPECT_TRUE(*MapValue("key", ByteString("elem1")) < *MapValue("key", ByteString("elem2")));
   EXPECT_FALSE(*MapValue("key", ByteString("elem2")) < *MapValue("key", ByteString("elem1")));
+}
+
+TEST(NanopbOperatorsTest, MapValue_FieldsEntry_OperatorLessThan_DifferentKeys) {
+  EXPECT_TRUE(*MapValue_FieldsEntry("key1", 42) < *MapValue_FieldsEntry("key2", 42));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key2", 42) < *MapValue_FieldsEntry("key1", 42));
+}
+
+TEST(NanopbOperatorsTest, MapValue_FieldsEntry_OperatorLessThan_EqualInstances) {
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", true) < *MapValue_FieldsEntry("key", true));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", false) < *MapValue_FieldsEntry("key", false));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", 1) < *MapValue_FieldsEntry("key", 1));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", 5.0) < *MapValue_FieldsEntry("key", 5.0));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", Ref("a", "b")) < *MapValue_FieldsEntry("key", Ref("a", "b")));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", Map("key", 42)) < *MapValue_FieldsEntry("key", Map("key", 42)));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", GeoPoint(1, 2)) < *MapValue_FieldsEntry("key", GeoPoint(1, 2)));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", Array(42)) < *MapValue_FieldsEntry("key", Array(42)));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", Timestamp(1, 2)) < *MapValue_FieldsEntry("key", Timestamp(1, 2)));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", nullptr) < *MapValue_FieldsEntry("key", nullptr));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", "string") < *MapValue_FieldsEntry("key", "string"));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", ByteString()) < *MapValue_FieldsEntry("key", ByteString()));
+}
+
+TEST(NanopbOperatorsTest, MapValue_FieldsEntry_OperatorLessThan_DifferentValueTypes) {
+  EXPECT_TRUE(*MapValue_FieldsEntry("key", true) < *MapValue_FieldsEntry("key", 42));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", 42) < *MapValue_FieldsEntry("key", true));
+  EXPECT_TRUE(*MapValue_FieldsEntry("key", 42) < *MapValue_FieldsEntry("key", 5.0));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", 5.0) < *MapValue_FieldsEntry("key", 42));
+  EXPECT_TRUE(*MapValue_FieldsEntry("key", 5.0) < *MapValue_FieldsEntry("key", Ref("a", "b")));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", Ref("a", "b")) < *MapValue_FieldsEntry("key", 5.0));
+  EXPECT_TRUE(*MapValue_FieldsEntry("key", Ref("a", "b")) < *MapValue_FieldsEntry("key", Map()));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", Map()) < *MapValue_FieldsEntry("key", Ref("a", "b")));
+  EXPECT_TRUE(*MapValue_FieldsEntry("key", Map()) < *MapValue_FieldsEntry("key", GeoPoint(1, 1)));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", GeoPoint(1, 1)) < *MapValue_FieldsEntry("key", Map()));
+  EXPECT_TRUE(*MapValue_FieldsEntry("key", GeoPoint(1, 1)) < *MapValue_FieldsEntry("key", Array()));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", Array()) < *MapValue_FieldsEntry("key", GeoPoint(1, 1)));
+  EXPECT_TRUE(*MapValue_FieldsEntry("key", Array()) < *MapValue_FieldsEntry("key", Timestamp(1, 1)));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", Timestamp(1, 1)) < *MapValue_FieldsEntry("key", Array()));
+  EXPECT_TRUE(*MapValue_FieldsEntry("key", Timestamp(1, 1)) < *MapValue_FieldsEntry("key", Value(nullptr)));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", Value(nullptr)) < *MapValue_FieldsEntry("key", Timestamp(1, 1)));
+  EXPECT_TRUE(*MapValue_FieldsEntry("key", Value(nullptr)) < *MapValue_FieldsEntry("key", "string"));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", "string") < *MapValue_FieldsEntry("key", Value(nullptr)));
+  EXPECT_TRUE(*MapValue_FieldsEntry("key", "string") < *MapValue_FieldsEntry("key", ByteString("byte")));
+  EXPECT_FALSE(*MapValue_FieldsEntry("key", ByteString("byte")) < *MapValue_FieldsEntry("key", "string"));
 }
 
 }  //  namespace
