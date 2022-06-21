@@ -168,6 +168,19 @@ extern const pb_field_t google_firestore_v1_MapValue_FieldsEntry_fields[3];
 
 #endif
 
+// The operator overloads below are implemented in Firestore/core/src/nanopb/operators.cc
+// and are tested in Firestore/core/test/unit/nanopb/operators_test.cc
+bool operator<(const google_firestore_v1_Value&, const google_firestore_v1_Value&);
+bool operator<(const google_firestore_v1_ArrayValue&, const google_firestore_v1_ArrayValue&);
+bool operator<(const google_firestore_v1_MapValue&, const google_firestore_v1_MapValue&);
+bool operator<(const google_firestore_v1_MapValue_FieldsEntry&, const google_firestore_v1_MapValue_FieldsEntry&);
+// The AbslHashValue template functions below are defined in Firestore/core/src/nanopb/hash.h
+// which must be included whenever absl::Hash is used on these types,
+// and are tested in Firestore/core/test/unit/nanopb/hash_test.cc
+template <typename H> H AbslHashValue(H, const google_firestore_v1_Value&);
+template <typename H> H AbslHashValue(H, const google_firestore_v1_ArrayValue&);
+template <typename H> H AbslHashValue(H, const google_firestore_v1_MapValue&);
+template <typename H> H AbslHashValue(H, const google_firestore_v1_MapValue_FieldsEntry&);
 }  // namespace firestore
 }  // namespace firebase
 

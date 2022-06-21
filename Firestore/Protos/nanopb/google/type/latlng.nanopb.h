@@ -65,6 +65,13 @@ extern const pb_field_t google_type_LatLng_fields[3];
 
 #endif
 
+// The operator overloads below are implemented in Firestore/core/src/nanopb/operators.cc
+// and are tested in Firestore/core/test/unit/nanopb/operators_test.cc
+bool operator<(const google_type_LatLng&, const google_type_LatLng&);
+// The AbslHashValue template functions below are defined in Firestore/core/src/nanopb/hash.h
+// which must be included whenever absl::Hash is used on these types,
+// and are tested in Firestore/core/test/unit/nanopb/hash_test.cc
+template <typename H> H AbslHashValue(H, const google_type_LatLng&);
 }  // namespace firestore
 }  // namespace firebase
 

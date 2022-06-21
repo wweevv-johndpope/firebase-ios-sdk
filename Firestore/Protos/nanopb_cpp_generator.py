@@ -41,6 +41,15 @@ if sys.platform == 'win32':
 plugin_pb2 = nanopb.plugin_pb2
 nanopb_pb2 = nanopb.nanopb_pb2
 
+# The list of types for which absl::Hash is implemented.
+TYPES_SUPPORTING_ABSL_HASH = frozenset([
+  "google_firestore_v1_ArrayValue",
+  "google_firestore_v1_MapValue",
+  "google_firestore_v1_MapValue_FieldsEntry",
+  "google_firestore_v1_Value",
+  "google_protobuf_Timestamp",
+  "google_type_LatLng",
+])
 
 def main():
   # Parse request
@@ -374,6 +383,8 @@ def nanopb_augment_header(generated_header, file_pretty_printing):
   for m in file_pretty_printing.messages:
     generated_header.insert('struct:' + m.full_classname, m.generate_declaration())
 
+  add_absl_hash_function_declarations(generated_header, file_pretty_printing)
+
   close_namespace(generated_header)
 
 
@@ -415,6 +426,42 @@ def close_namespace(generated_file):
       }  // namespace firestore
       }  // namespace firebase\n\n'''))
 
+def add_absl_hash_function_declarations(generated_header, file_pretty_printing):
+  """Adds function declarations for types that support absl::Hash.
+  """
+  types_supporting_absl_hash = tuple(
+    m.full_classname
+    for m in file_pretty_printing.messages
+    if m.full_classname in TYPES_SUPPORTING_ABSL_HASH
+  )
+
+  if len(types_supporting_absl_hash) == 0:
+    return
+
+  for line in absl_hash_function_declarations_lines(types_supporting_absl_hash):
+    generated_header.insert('eof', line)
+
+def absl_hash_function_declarations_lines(type_names):
+  """Generates lines to be inserted into a nanopb header file to declare the
+  operator overloads and AbslHashValue() function for supporting absl::Hash
+  for the given types.
+  """
+  yield '// The operator overloads below are implemented in ' \
+    'Firestore/core/src/nanopb/operators.cc'
+  yield '// and are tested in Firestore/core/test/unit/nanopb/operators_test.cc'
+
+  for type_name in type_names:
+    yield 'bool operator<(const {0}&, const {0}&);'.format(type_name)
+
+  yield '// The AbslHashValue template functions below are defined in ' \
+    'Firestore/core/src/nanopb/hash.h'
+  yield '// which must be included whenever absl::Hash is used on these types,'
+  yield '// and are tested in ' \
+    'Firestore/core/test/unit/nanopb/hash_test.cc'
+
+  for type_name in type_names:
+    yield 'template <typename H> H AbslHashValue(H, const {0}&);'.format(
+      type_name)
 
 def add_using_declarations(generated_file):
   """Augments a generated file by adding the necessary using declarations.

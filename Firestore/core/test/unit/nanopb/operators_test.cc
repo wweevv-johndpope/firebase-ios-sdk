@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "Firestore/core/src/nanopb/operators.h"
+#include "Firestore/Protos/nanopb/google/firestore/v1/document.nanopb.h"
 
 #include "Firestore/core/include/firebase/firestore/geo_point.h"
 #include "Firestore/core/src/nanopb/byte_string.h"

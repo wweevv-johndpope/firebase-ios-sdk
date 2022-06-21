@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+// This file defines the AbslHashValue() functions declared in the nanopb.h
+// files included below.
+
 #ifndef FIRESTORE_CORE_SRC_NANOPB_HASH_H_
 #define FIRESTORE_CORE_SRC_NANOPB_HASH_H_
 
@@ -21,6 +24,8 @@
 #include <vector>
 
 #include "Firestore/Protos/nanopb/google/firestore/v1/document.nanopb.h"
+#include "Firestore/Protos/nanopb/google/protobuf/timestamp.nanopb.h"
+#include "Firestore/Protos/nanopb/google/type/latlng.nanopb.h"
 #include "Firestore/core/src/nanopb/message.h"
 #include "Firestore/core/src/nanopb/util.h"
 #include "Firestore/core/src/util/hard_assert.h"

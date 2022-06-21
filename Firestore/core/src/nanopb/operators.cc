@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-#include "Firestore/core/src/nanopb/operators.h"
+// This file defines the operator<() functions declared in the nanopb.h files
+// included below.
+
+#include "Firestore/Protos/nanopb/google/firestore/v1/document.nanopb.h"
+#include "Firestore/Protos/nanopb/google/protobuf/timestamp.nanopb.h"
+#include "Firestore/Protos/nanopb/google/type/latlng.nanopb.h"
 #include "Firestore/core/src/nanopb/nanopb_util.h"
 #include "Firestore/core/src/nanopb/util.h"
 
@@ -126,6 +131,7 @@ bool operator<(const google_firestore_v1_Value& obj1,
 
   UNREACHABLE();
 }
+
 
 bool operator<(const google_protobuf_Timestamp& obj1,
                const google_protobuf_Timestamp& obj2) {

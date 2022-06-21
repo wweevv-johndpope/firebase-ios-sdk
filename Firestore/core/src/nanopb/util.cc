@@ -19,7 +19,6 @@
 #include <algorithm>
 
 #include "Firestore/Protos/nanopb/google/firestore/v1/document.nanopb.h"
-#include "Firestore/core/src/nanopb/operators.h"
 
 namespace firebase {
 namespace firestore {
