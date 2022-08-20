@@ -79,17 +79,21 @@ body:
         - macCatalyst
     validations:
       required: true
-
-
-# TODO: description of unexpected behavior
-# TODO: steps to reproduce
-
   - type: markdown
     attributes:
-      label: Minimal Reproducible Example 
+      label: Description
       description: |
-        While not required, providing a minimal reproducible example will help
-        us triage your issue much faster.
+        Describe the issue. Explain what you expected to happen and what
+        actually happened.
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      label: Reproducing the issue
+      description: |
+        Please provider steps to introduce or a minimal reproducible example.
+        Providing a minimal reproducible example will help us triage your
+        issue much faster.
       value: |
         Include a link or file to a 
         [minimal reproducible example](https://stackoverflow.com/help/minimal-reproducible-example).
